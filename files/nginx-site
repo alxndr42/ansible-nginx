@@ -1,0 +1,46 @@
+#!/bin/bash -e
+
+AVAILABLE="/etc/nginx/sites-available"
+ENABLED="/etc/nginx/sites-enabled"
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $(basename $0) create|enable|disable <site_name>"
+    exit 0
+fi
+
+case "$1" in
+    create )
+        if [ -f $AVAILABLE/$2 ]; then
+            echo "$AVAILABLE/$2 already exists."
+            exit 1
+        fi
+        sed -e "s/SERVER_NAME/$2/" $AVAILABLE/template > $AVAILABLE/$2
+        echo "$AVAILABLE/$2 created. Don't forget to enable!"
+        ;;
+    enable )
+        if [ ! -f $AVAILABLE/$2 ]; then
+            echo "$AVAILABLE/$2 doesn't exist."
+            exit 1
+        fi
+        if [ -f $ENABLED/$2 ]; then
+            echo "$2 is already enabled."
+            exit 0
+        fi
+        ln -s $AVAILABLE/$2 $ENABLED
+        systemctl reload nginx
+        echo "$2 is enabled."
+        ;;
+    disable )
+        if [ ! -f $ENABLED/$2 ]; then
+            echo "$2 is not enabled."
+            exit 0
+        fi
+        rm $ENABLED/$2
+        systemctl reload nginx
+        echo "$2 is disabled."
+        ;;
+    * )
+        echo "Unsupported command: $1"
+        exit 1
+        ;;
+esac

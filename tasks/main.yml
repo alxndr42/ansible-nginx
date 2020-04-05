@@ -1,0 +1,56 @@
+---
+- name: install nginx
+  apt:
+    name: "{{ nginx_packages }}"
+    cache_valid_time: 86400
+
+- name: template nginx.conf
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/
+    backup: yes
+  notify: reload nginx
+
+- name: copy snippets
+  copy:
+    src: snippets
+    dest: /etc/nginx/
+
+- name: copy site template
+  copy:
+    src: template
+    dest: /etc/nginx/sites-available/
+
+- name: copy nginx-site script
+  copy:
+    src: nginx-site
+    dest: /usr/local/sbin/
+    mode: 0750
+    owner: root
+    group: www-data
+
+- name: remove default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: copy openssl.cnf
+  copy:
+    src: openssl.cnf
+    dest: /etc/ssl/
+    backup: yes
+  notify: restart nginx
+
+- name: generate localhost certificate
+  command: /usr/bin/openssl req -x509 -subj "/CN=localhost" -days 365 -sha256 -out /etc/ssl/localhost.crt -newkey rsa:2048 -nodes -keyout /etc/ssl/localhost.key
+  args:
+    creates: /etc/ssl/localhost.crt
+
+- name: create ACME webroot
+  file:
+    path: /var/www/_acme-challenge
+    state: directory
+    mode: 0750
+    owner: root
+    group: www-data
