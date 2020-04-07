@@ -3,8 +3,11 @@
 AVAILABLE="/etc/nginx/sites-available"
 ENABLED="/etc/nginx/sites-enabled"
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $(basename $0) create|enable|disable <site_name>"
+if [ $# -lt 2 ]; then
+    echo "Usage:"
+    echo "  $(basename $0) create <site_name> [server_name]"
+    echo "  $(basename $0) enable <site_name>"
+    echo "  $(basename $0) disable <site_name>"
     exit 0
 fi
 
@@ -14,7 +17,12 @@ case "$1" in
             echo "$AVAILABLE/$2 already exists."
             exit 1
         fi
-        sed -e "s/SERVER_NAME/$2/" $AVAILABLE/template > $AVAILABLE/$2
+        if [ $# -gt 2 ]; then
+            SERVER_NAME=$3
+        else
+            SERVER_NAME=$2
+        fi
+        sed -e "s/SERVER_NAME/$SERVER_NAME/" $AVAILABLE/template > $AVAILABLE/$2
         echo "$AVAILABLE/$2 created. Don't forget to enable!"
         ;;
     enable )
