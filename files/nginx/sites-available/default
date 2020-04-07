@@ -1,0 +1,26 @@
+server {
+    server_name default;
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+    ssl_certificate /etc/ssl/default.crt;
+    ssl_certificate_key /etc/ssl/default.key;
+    ssl_stapling off;
+
+    root /var/www/html;
+    index index.html index.nginx-debian.html;
+}
+
+server {
+    server_name default;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    location ^~ /.well-known/acme-challenge {
+        root /var/www/_acme-challenge;
+        access_log off;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}

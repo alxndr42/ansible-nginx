@@ -11,15 +11,18 @@
     backup: yes
   notify: reload nginx
 
-- name: copy snippets
+- name: copy nginx files
   copy:
-    src: snippets
+    src: nginx/
     dest: /etc/nginx/
+  notify: reload nginx
 
-- name: copy site template
-  copy:
-    src: template
-    dest: /etc/nginx/sites-available/
+- name: link default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    src: /etc/nginx/sites-available/default
+    state: link
+  notify: reload nginx
 
 - name: copy nginx-site script
   copy:
@@ -29,12 +32,6 @@
     owner: root
     group: www-data
 
-- name: remove default site
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: reload nginx
-
 - name: copy openssl.cnf
   copy:
     src: openssl.cnf
@@ -42,10 +39,10 @@
     backup: yes
   notify: restart nginx
 
-- name: generate localhost certificate
-  command: /usr/bin/openssl req -x509 -subj "/CN=localhost" -days 365 -sha256 -out /etc/ssl/localhost.crt -newkey rsa:2048 -nodes -keyout /etc/ssl/localhost.key
+- name: generate default certificate
+  command: /usr/bin/openssl req -x509 -subj "/CN=default" -days 3650 -sha256 -out /etc/ssl/default.crt -newkey rsa:2048 -nodes -keyout /etc/ssl/default.key
   args:
-    creates: /etc/ssl/localhost.crt
+    creates: /etc/ssl/default.crt
 
 - name: create ACME webroot
   file:
