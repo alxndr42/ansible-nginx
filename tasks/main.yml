@@ -17,11 +17,19 @@
     dest: /etc/nginx/
   notify: reload nginx
 
-- name: link default site
+- name: enable default site
   file:
     path: /etc/nginx/sites-enabled/default
     src: /etc/nginx/sites-available/default
     state: link
+  when: nginx_default_site
+  notify: reload nginx
+
+- name: disable default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  when: not nginx_default_site
   notify: reload nginx
 
 - name: copy nginx-site script
