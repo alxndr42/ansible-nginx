@@ -17,6 +17,12 @@
     dest: /etc/nginx/
   notify: reload nginx
 
+- name: template default site
+  template:
+    src: default
+    dest: /etc/nginx/sites-available/
+  notify: reload nginx
+
 - name: enable default site
   file:
     path: /etc/nginx/sites-enabled/default

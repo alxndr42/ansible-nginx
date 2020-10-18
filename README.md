@@ -1,4 +1,4 @@
-## ansible-nginx
+# ansible-nginx
 
 Basic nginx setup for Debian-based systems.
 
@@ -8,6 +8,6 @@ using the included [template](files/template).
 Please see [defaults/main.yml](defaults/main.yml) for default configuration
 values.
 
-### License
+## License
 
 GPLv3
