@@ -46,8 +46,8 @@
     owner: root
     group: www-data
 
-- name: copy openssl.cnf
-  copy:
+- name: template openssl.cnf
+  template:
     src: openssl.cnf
     dest: /etc/ssl/
     backup: yes
