@@ -38,8 +38,14 @@ case "$1" in
             exit 0
         fi
         ln -s "$AVAILABLE/$SITE" $ENABLED
-        systemctl reload nginx
-        echo "$SITE is enabled."
+        if nginx -t; then
+            systemctl reload nginx
+            echo "$SITE is enabled."
+        else
+            rm "$ENABLED/$SITE"
+            echo "$SITE is not enabled."
+            exit 1
+        fi
         ;;
     disable )
         if [ ! -f "$ENABLED/$SITE" ]; then
