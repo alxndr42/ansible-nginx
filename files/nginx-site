@@ -11,10 +11,13 @@ if [ $# -lt 2 ]; then
     exit 0
 fi
 
+COMMAND="$1"
+SITE="$2"
+
 case "$1" in
     create )
-        if [ -f "$AVAILABLE/$2" ]; then
-            echo "$AVAILABLE/$2 already exists."
+        if [ -f "$AVAILABLE/$SITE" ]; then
+            echo "$AVAILABLE/$SITE already exists."
             exit 1
         fi
         if [ $# -gt 2 ]; then
@@ -22,33 +25,33 @@ case "$1" in
         else
             SERVER_NAME=$2
         fi
-        sed -e "s/SERVER_NAME/$SERVER_NAME/" $AVAILABLE/template > "$AVAILABLE/$2"
-        echo "$AVAILABLE/$2 created. Don't forget to enable!"
+        sed -e "s/SERVER_NAME/$SERVER_NAME/" $AVAILABLE/template > "$AVAILABLE/$SITE"
+        echo "$AVAILABLE/$SITE created. Don't forget to enable!"
         ;;
     enable )
-        if [ ! -f "$AVAILABLE/$2" ]; then
-            echo "$AVAILABLE/$2 doesn't exist."
+        if [ ! -f "$AVAILABLE/$SITE" ]; then
+            echo "$AVAILABLE/$SITE doesn't exist."
             exit 1
         fi
-        if [ -f "$ENABLED/$2" ]; then
-            echo "$2 is already enabled."
+        if [ -f "$ENABLED/$SITE" ]; then
+            echo "$SITE is already enabled."
             exit 0
         fi
-        ln -s "$AVAILABLE/$2" $ENABLED
+        ln -s "$AVAILABLE/$SITE" $ENABLED
         systemctl reload nginx
-        echo "$2 is enabled."
+        echo "$SITE is enabled."
         ;;
     disable )
-        if [ ! -f "$ENABLED/$2" ]; then
-            echo "$2 is not enabled."
+        if [ ! -f "$ENABLED/$SITE" ]; then
+            echo "$SITE is not enabled."
             exit 0
         fi
-        rm "$ENABLED/$2"
+        rm "$ENABLED/$SITE"
         systemctl reload nginx
-        echo "$2 is disabled."
+        echo "$SITE is disabled."
         ;;
     * )
-        echo "Unsupported command: $1"
+        echo "Unsupported command: $COMMAND"
         exit 1
         ;;
 esac
