@@ -5,15 +5,15 @@ ENABLED="/etc/nginx/sites-enabled"
 
 if [ $# -lt 2 ]; then
     echo "Usage:"
-    echo "  $(basename $0) create <site_name> [server_name]"
-    echo "  $(basename $0) enable <site_name>"
-    echo "  $(basename $0) disable <site_name>"
+    echo "  $(basename "$0") create <site_name> [server_name]"
+    echo "  $(basename "$0") enable <site_name>"
+    echo "  $(basename "$0") disable <site_name>"
     exit 0
 fi
 
 case "$1" in
     create )
-        if [ -f $AVAILABLE/$2 ]; then
+        if [ -f "$AVAILABLE/$2" ]; then
             echo "$AVAILABLE/$2 already exists."
             exit 1
         fi
@@ -22,28 +22,28 @@ case "$1" in
         else
             SERVER_NAME=$2
         fi
-        sed -e "s/SERVER_NAME/$SERVER_NAME/" $AVAILABLE/template > $AVAILABLE/$2
+        sed -e "s/SERVER_NAME/$SERVER_NAME/" $AVAILABLE/template > "$AVAILABLE/$2"
         echo "$AVAILABLE/$2 created. Don't forget to enable!"
         ;;
     enable )
-        if [ ! -f $AVAILABLE/$2 ]; then
+        if [ ! -f "$AVAILABLE/$2" ]; then
             echo "$AVAILABLE/$2 doesn't exist."
             exit 1
         fi
-        if [ -f $ENABLED/$2 ]; then
+        if [ -f "$ENABLED/$2" ]; then
             echo "$2 is already enabled."
             exit 0
         fi
-        ln -s $AVAILABLE/$2 $ENABLED
+        ln -s "$AVAILABLE/$2" $ENABLED
         systemctl reload nginx
         echo "$2 is enabled."
         ;;
     disable )
-        if [ ! -f $ENABLED/$2 ]; then
+        if [ ! -f "$ENABLED/$2" ]; then
             echo "$2 is not enabled."
             exit 0
         fi
-        rm $ENABLED/$2
+        rm "$ENABLED/$2"
         systemctl reload nginx
         echo "$2 is disabled."
         ;;
