@@ -1,4 +1,5 @@
 ---
+nginx: true
 nginx_access_log: "off"
 nginx_ciphers: "ECDH+aRSA+CHACHA20:ECDH+aRSA+AESGCM"
 nginx_curves: "X25519:secp521r1:secp384r1"
